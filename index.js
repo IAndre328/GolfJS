@@ -58,10 +58,13 @@ function animate(){
 animate()
 window.onmousemove = logMouseMove;
 
-
+var mousePos = {
+    x: 0,
+    y:0,
+}
 function logMouseMove(e) {
 	e = e || window.event;	
-	const mousePos = { x: e.clientX, y: e.clientY };
+	mousePos = { x: e.clientX, y: e.clientY };
 	console.log(mousePos)
     
 }
@@ -78,10 +81,11 @@ function mouseDown(){
 window.onmousedown = mouseDown
 window.onmouseup = mouseUp
 console.log(mousePos)
+
 if (
     mousePos.x >= ball.position.x && 
-    mousePos.x <= ball.position.x + ball.radius*2 &&
-    mouseClickado === true
+    mousePos.x <= ball.position.x + ball.radius*2 
+    
     ){
     movimentarBola
 }
