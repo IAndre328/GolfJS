@@ -1,4 +1,4 @@
-const canvas = document.querySelector('canvas')
+let canvas = document.querySelector('canvas')
 
 const c = canvas.getContext('2d')
 
@@ -15,20 +15,24 @@ class sprite {
         this.position = position
         this.color = color
         this.radius = radius
+        
+
     }
     draw(){
         c.fillStyle = this.color
         c.beginPath()
         c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, true); // Círculo exterior
-        c.fill();
+        c.fill()
     }
+   
+    
 }
 
 let mouseClickado
 
 const ball = new sprite({
     position:{
-        x: canvas.width/2,
+        x: 512,
         y: canvas.height-50
     },
     color:'white',
@@ -58,14 +62,14 @@ function animate(){
 animate()
 window.onmousemove = logMouseMove;
 
-var mousePos = {
-    x: 0,
-    y:0,
-}
+
+
+
+
 function logMouseMove(e) {
 	e = e || window.event;	
 	mousePos = { x: e.clientX, y: e.clientY };
-	console.log(mousePos)
+	console.log(mousePos.x)
     
 }
 
@@ -77,19 +81,24 @@ function mouseUp(){
 function mouseDown(){
     mouseClickado = true
    console.log(mouseClickado)
+   console.log('teste')
+   ball.position.y -= 10
 }
-window.onmousedown = mouseDown
-window.onmouseup = mouseUp
-console.log(mousePos)
 
-if (
-    mousePos.x >= ball.position.x && 
-    mousePos.x <= ball.position.x + ball.radius*2 
+
+
+
+
+
+canvas.onmousedown = () => {
+    if (
+        mousePos.x >= ball.position.x
+        && mousePos.x <= ball.position.x + ball.radius*2
+        && mousePos.y >= ball.position.y
+        && mousePos.y <= ball.position.y + ball.radius*2
+        ){
+        mouseDown()
+    }
     
-    ){
-    movimentarBola
 }
-
-function movimentarBola(){
-    console.log('Movimentar Bola')
-}
+canvas.onmouseup = mouseUp
