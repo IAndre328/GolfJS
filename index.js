@@ -1,13 +1,14 @@
 let canvas = document.querySelector('canvas')
 
 const c = canvas.getContext('2d')
+canvas.style.display = 'grid'
+canvas.style.alignItems = 'center'
 
 canvas.width = 1024
 canvas.height = 576
 
 c.fillStyle = 'green'
 c.fillRect(0,0,canvas.width,canvas.height)
-
 c.fillStyle = 'red'
 
 class sprite {
@@ -28,7 +29,7 @@ class sprite {
     
 }
 
-let mouseClickado
+
 
 const ball = new sprite({
     position:{
@@ -42,7 +43,7 @@ const ball = new sprite({
 
 const hole = new sprite({
     position:{
-        x: canvas.width/2,
+        x: 512,
         y: 50
     },
     color:'black',
@@ -60,35 +61,21 @@ function animate(){
     
 }
 animate()
-window.onmousemove = logMouseMove;
-
-
-
 
 
 function logMouseMove(e) {
 	e = e || window.event;	
 	mousePos = { x: e.clientX, y: e.clientY };
-	console.log(mousePos.x)
+	// console.log(mousePos)
     
 }
 
-function mouseUp(){
-    mouseClickado = false
-    console.log(mouseClickado)
-}
+
 
 function mouseDown(){
-    mouseClickado = true
-   console.log(mouseClickado)
-   console.log('teste')
+//    console.log('teste')
    ball.position.y -= 10
 }
-
-
-
-
-
 
 canvas.onmousedown = () => {
     if (
@@ -101,4 +88,15 @@ canvas.onmousedown = () => {
     }
     
 }
-canvas.onmouseup = mouseUp
+
+window.onmousemove = logMouseMove;
+
+//win
+
+if (
+   ball.position.x >= hole.position.x &&
+   ball.position.x <= hole.position.x + hole.radius*2
+  
+    ){
+        console.log('gg')
+}
