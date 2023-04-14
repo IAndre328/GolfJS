@@ -12,12 +12,12 @@ c.fillRect(0,0,canvas.width,canvas.height)
 c.fillStyle = 'red'
 
 class sprite {
-    constructor({position,color,radius}) {
+    constructor({position,color,radius,velocidade}) {
         this.position = position
         this.color = color
         this.radius = radius
-        
-
+        this.velocidade = velocidade
+       
     }
     draw(){
         c.fillStyle = this.color
@@ -25,7 +25,7 @@ class sprite {
         c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, true); // Círculo exterior
         c.fill()
     }
-   
+
     
 }
 
@@ -38,6 +38,7 @@ const ball = new sprite({
     },
     color:'white',
     radius: 10,
+    velocidade:0.2,
 })
 
 
@@ -73,8 +74,10 @@ function logMouseMove(e) {
 
 
 function mouseDown(){
-//    console.log('teste')
-   ball.position.y -= 10
+   console.log('teste')
+    ball.position.y -= 10
+   
+   
 }
 
 canvas.onmousedown = () => {
