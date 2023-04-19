@@ -1,8 +1,11 @@
-let canvas = document.querySelector('canvas')
+const canvas = document.querySelector('canvas')
 
 const c = canvas.getContext('2d')
 canvas.style.display = 'grid'
 canvas.style.alignItems = 'center'
+
+let velocidade = 0
+let intervalId = null
 
 canvas.width = 1024
 canvas.height = 576
@@ -11,12 +14,14 @@ c.fillStyle = 'green'
 c.fillRect(0,0,canvas.width,canvas.height)
 c.fillStyle = 'red'
 
+
+
 class sprite {
-    constructor({position,color,radius,velocidade}) {
+    constructor({position,color,radius}) {
         this.position = position
         this.color = color
         this.radius = radius
-        this.velocidade = velocidade
+       
        
     }
     draw(){
@@ -64,7 +69,7 @@ function animate(){
 animate()
 
 
-function logMouseMove(e) {
+const logMouseMove = (e) => {
 	e = e || window.event;	
 	mousePos = { x: e.clientX, y: e.clientY };
 	// console.log(mousePos)
@@ -73,12 +78,36 @@ function logMouseMove(e) {
 
 
 
-function mouseDown(){
+const mouseDown = () => {
    console.log('teste')
-    ball.position.y -= 10
-   
+    
+   mouseUp()
    
 }
+
+function mouseUp(){
+   
+    //Acelera
+    let acelerar = setInterval(function(){
+      velocidade++
+      ball.position.y -= velocidade
+      if(velocidade === 20) {
+       let frear = setInterval(function(){
+        velocidade-=1.5
+        ball.position.y -= velocidade
+        if (velocidade <= 0){
+            clearInterval(frear)
+        }
+       },30)
+          clearInterval(acelerar);
+      }
+  }, 30)
+
+
+    
+    }
+    
+       
 
 canvas.onmousedown = () => {
     if (
@@ -92,7 +121,10 @@ canvas.onmousedown = () => {
     
 }
 
+
+
 window.onmousemove = logMouseMove;
+
 
 //win
 
