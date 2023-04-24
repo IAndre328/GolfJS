@@ -5,10 +5,11 @@ canvas.style.display = 'grid'
 canvas.style.alignItems = 'center'
 
 let velocidade = 0
-let intervalId = null
+let tacada = true
+
 
 canvas.width = 1024
-canvas.height = 576
+canvas.height = 512
 
 c.fillStyle = 'green'
 c.fillRect(0,0,canvas.width,canvas.height)
@@ -34,11 +35,35 @@ class sprite {
     
 }
 
-
-
+class walls {
+    constructor({position,color,width,height}){
+        this.position = position
+        this.color = color
+        this.height = height
+        this.width = width
+    }
+    draw(){
+        c.fillStyle = this.color
+        c.fillRect(this.position.x, this.position.y,this.width,this.height)
+       
+    }
+    
+}
+ let wall1
+const paredes = new walls({
+    
+        position:{
+            x: 100,
+            y:100,
+        },
+        color:'red',
+        width: 100,
+        height: 50
+    }
+)
 const ball = new sprite({
     position:{
-        x: 512,
+        x: canvas.width/2,
         y: canvas.height-50
     },
     color:'white',
@@ -49,7 +74,7 @@ const ball = new sprite({
 
 const hole = new sprite({
     position:{
-        x: 512,
+        x: canvas.width/2,
         y: 50
     },
     color:'black',
@@ -64,6 +89,7 @@ function animate(){
     c.fillRect(0,0,canvas.width,canvas.height)
     ball.draw()
     hole.draw()
+    paredes.draw()
     
 }
 animate()
@@ -81,25 +107,33 @@ const logMouseMove = (e) => {
 const mouseDown = () => {
    console.log('teste')
     
-   mouseUp()
+canvas.addEventListener('mouseup',()=>{
+    if (tacada){
+        mouseUp()
+    }
+})
    
 }
 
 function mouseUp(){
-   
+   tacada = false
     //Acelera
     let acelerar = setInterval(function(){
-      velocidade++
+      velocidade+=5
       ball.position.y -= velocidade
-      if(velocidade === 20) {
+        console.log(velocidade)
+      if(velocidade >= 20) {
+        clearInterval(acelerar)
+
        let frear = setInterval(function(){
-        velocidade-=1.5
+        velocidade-=2
         ball.position.y -= velocidade
+        console.log(velocidade)
         if (velocidade <= 0){
             clearInterval(frear)
+            tacada = true
         }
-       },30)
-          clearInterval(acelerar);
+       },30)  
       }
   }, 30)
 
@@ -128,10 +162,11 @@ window.onmousemove = logMouseMove;
 
 //win
 
-if (
-   ball.position.x >= hole.position.x &&
-   ball.position.x <= hole.position.x + hole.radius*2
-  
+if(
+    ball.position.x + ball.radius*2 - hole.position.x + hole.radius*2 <= 20 && 
+    ball.position.x - hole.position.x >= 0 &&
+    ball.position.y - hole.position.y <= 20 &&
+    ball.position.y - hole.position.y >= 0
     ){
-        console.log('gg')
+    console.log(`alegria`)
 }
