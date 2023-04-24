@@ -6,6 +6,8 @@ canvas.style.alignItems = 'center'
 
 let velocidade = 0
 let tacada = true
+let gameWon = false
+
 
 
 canvas.width = 1024
@@ -13,7 +15,7 @@ canvas.height = 512
 
 c.fillStyle = 'green'
 c.fillRect(0,0,canvas.width,canvas.height)
-c.fillStyle = 'red'
+
 
 
 
@@ -49,9 +51,8 @@ class walls {
     }
     
 }
- let wall1
-const paredes = new walls({
-    
+
+ const wall1 = new walls({
         position:{
             x: 100,
             y:100,
@@ -61,6 +62,21 @@ const paredes = new walls({
         height: 50
     }
 )
+
+const wall2 = new walls({
+    position: {
+        x: 500,
+        y: 250,
+    },
+    color:'red',
+    width:100,
+    height:50
+})
+
+const paredes = [
+    wall1,wall2,
+]
+
 const ball = new sprite({
     position:{
         x: canvas.width/2,
@@ -68,7 +84,6 @@ const ball = new sprite({
     },
     color:'white',
     radius: 10,
-    velocidade:0.2,
 })
 
 
@@ -81,54 +96,45 @@ const hole = new sprite({
     radius: 20,
 })
 
-  
-
-function animate(){
-    requestAnimationFrame(animate)
-    c.fillStyle = 'green'
-    c.fillRect(0,0,canvas.width,canvas.height)
+const desenharSprites = () =>{
     ball.draw()
     hole.draw()
-    paredes.draw()
-    
+    for (i=0;i<paredes.length;i++){
+        paredes[i].draw()
+    }
 }
-animate()
-
 
 const logMouseMove = (e) => {
-	e = e || window.event;	
-	mousePos = { x: e.clientX, y: e.clientY };
-	// console.log(mousePos)
-    
+	e = e || window.event
+	mousePos = { x: e.clientX, y: e.clientY }
 }
 
-
+window.onmousemove = logMouseMove
 
 const mouseDown = () => {
-   console.log('teste')
-    
 canvas.addEventListener('mouseup',()=>{
     if (tacada){
         mouseUp()
     }
 })
-   
 }
 
 function mouseUp(){
+    
+
    tacada = false
     //Acelera
     let acelerar = setInterval(function(){
       velocidade+=5
       ball.position.y -= velocidade
-        console.log(velocidade)
+    //   console.log(ball.position)
       if(velocidade >= 20) {
         clearInterval(acelerar)
 
        let frear = setInterval(function(){
         velocidade-=2
         ball.position.y -= velocidade
-        console.log(velocidade)
+        // console.log(ball.position)
         if (velocidade <= 0){
             clearInterval(frear)
             tacada = true
@@ -145,10 +151,10 @@ function mouseUp(){
 
 canvas.onmousedown = () => {
     if (
-        mousePos.x >= ball.position.x
-        && mousePos.x <= ball.position.x + ball.radius*2
-        && mousePos.y >= ball.position.y
-        && mousePos.y <= ball.position.y + ball.radius*2
+        mousePos.x >= ball.position.x - ball.radius
+        && mousePos.x <= ball.position.x + ball.radius*1.5
+        && mousePos.y >= ball.position.y - ball.radius
+        && mousePos.y <= ball.position.y + ball.radius*1.5
         ){
         mouseDown()
     }
@@ -157,16 +163,62 @@ canvas.onmousedown = () => {
 
 
 
-window.onmousemove = logMouseMove;
+
+// colisão
+const colisao = () =>{
+    if (ball.position.y <= paredes[1].position.y + paredes[1].height) {
+        console.log("alegria")
+    }
+}
 
 
 //win
-
-if(
-    ball.position.x + ball.radius*2 - hole.position.x + hole.radius*2 <= 20 && 
-    ball.position.x - hole.position.x >= 0 &&
-    ball.position.y - hole.position.y <= 20 &&
-    ball.position.y - hole.position.y >= 0
-    ){
-    console.log(`alegria`)
+const win = () => {
+     if(
+        ball.position.y <= hole.position.y + hole.radius &&
+        ball.position.x <= hole.position.x &&
+        ball.position.y >= hole.position.y - hole.radius
+        ){
+        console.log(`bola no buraco`)
+        gameWon = true    
+    }
 }
+
+function animate(){
+    requestAnimationFrame(animate)
+    c.fillStyle = 'green'
+    c.fillRect(0,0,canvas.width,canvas.height)
+    if (!gameWon){
+        desenharSprites()
+       win()
+      colisao()
+    }
+}
+
+
+
+// menu
+
+function menu(){
+    const menuIniciar = {
+        corFundo:'rgb(156, 42, 13)',
+        corBorda:'rgb(109, 22, 0)',
+        x: canvas.width/2,
+        y: canvas.height/2-100,
+        width: 175,
+        height: 75,
+    }
+  c.beginPath()
+  c.fillStyle = menuIniciar.corFundo
+  c.strokeStyle = menuIniciar.corBorda
+  c.moveTo(menuIniciar.x,menuIniciar.y)
+  c.lineTo(menuIniciar.y,menuIniciar.y + menuIniciar.height)
+  c.lineTo(menuIniciar.y + menuIniciar.height, menuIniciar)
+  c.closePath()
+  c.stroke()
+  c.fill()
+  
+    
+}
+window.onload = menu()
+
