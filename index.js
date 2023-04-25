@@ -8,7 +8,10 @@ let velocidade = 0
 let tacada = true
 let gameWon = false
 
-
+let mousePos = {
+    x: 0,
+    y: 0,
+}
 
 canvas.width = 1024
 canvas.height = 512
@@ -104,9 +107,9 @@ const desenharSprites = () =>{
     }
 }
 
-const logMouseMove = (e) => {
+function logMouseMove(e)  {
 	e = e || window.event
-	mousePos = { x: e.clientX, y: e.clientY }
+	 mousePos = { x: e.clientX, y: e.clientY }
 }
 
 window.onmousemove = logMouseMove
@@ -199,26 +202,62 @@ function animate(){
 
 // menu
 
+
 function menu(){
-    const menuIniciar = {
+    var menuIniciar = {
         corFundo:'rgb(156, 42, 13)',
         corBorda:'rgb(109, 22, 0)',
-        x: canvas.width/2,
-        y: canvas.height/2-100,
         width: 175,
         height: 75,
+        x: canvas.width/2 - 175/2,
+        y: canvas.height/2-100,
+        texto: "Jogar"
     }
-  c.beginPath()
+  var menuOpçoes = {
+    corFundo:'rgb(156, 42, 13)',
+    corBorda:'rgb(109, 22, 0)',
+    width: 175,
+    height: 75,
+    x: canvas.width/2 - 175/2,
+    y: canvas.height/2 + 50,
+    texto: "Opções"
+  }
+    c.lineWidth = 5
+    c.font = "30px Arial"
+  // iniciar
+  
   c.fillStyle = menuIniciar.corFundo
   c.strokeStyle = menuIniciar.corBorda
-  c.moveTo(menuIniciar.x,menuIniciar.y)
-  c.lineTo(menuIniciar.y,menuIniciar.y + menuIniciar.height)
-  c.lineTo(menuIniciar.y + menuIniciar.height, menuIniciar)
-  c.closePath()
-  c.stroke()
-  c.fill()
-  
-    
+  c.fillRect(menuIniciar.x,menuIniciar.y,menuIniciar.width,menuIniciar.height)
+  c.strokeRect(menuIniciar.x,menuIniciar.y,menuIniciar.width,menuIniciar.height)
+
+  c.fillStyle = "black"
+  c.textAlign = "center"
+  c.fillText(`${menuIniciar.texto}`,menuIniciar.x + menuIniciar.width/2,menuIniciar.y + menuIniciar.height/100*60)
+
+  // opcões
+  c.fillStyle = menuOpçoes.corFundo
+  c.strokeStyle = menuOpçoes.corBorda
+  c.fillRect(menuOpçoes.x,menuOpçoes.y,menuOpçoes.width,menuOpçoes.height)
+  c.strokeRect(menuOpçoes.x,menuOpçoes.y,menuOpçoes.width,menuOpçoes.height)
+
+  c.fillStyle = "black"
+  c.textAlign = "center"
+  c.fillText(`${menuOpçoes.texto}`,menuOpçoes.x + menuOpçoes.width/2,menuOpçoes.y + menuOpçoes.height/100*60)
+
+   canvas.onmousemove = () => {
+    console.log(mousePos)
+    console.log(menuIniciar.x,menuIniciar.y)
+    if (
+        mousePos.x >= menuIniciar.x &&
+        mousePos.x <= menuIniciar.x + menuIniciar.width &&
+        mousePos.y >= menuIniciar.y &&
+        mousePos.y <= menuIniciar.y + menuIniciar.height
+        
+        ){
+            animate()
+    }
+   } 
 }
 window.onload = menu()
 
