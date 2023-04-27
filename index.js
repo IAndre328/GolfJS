@@ -9,8 +9,8 @@ let mousePos = {
     y: 0,
 }
 
-canvas.width = 1024
-canvas.height = 512
+canvas.width = window.innerWidth
+canvas.height = window.innerHeight
 
 c.fillStyle = 'green'
 c.fillRect(0,0,canvas.width,canvas.height)
@@ -70,15 +70,14 @@ class menus {
         
     }
     hover(){
-        canvas.onmousemove = () => {
-             if (
+        if (
             mousePos.x >= this.position.x &&
             mousePos.x <= this.position.x + this.width &&
             mousePos.y >= this.position.y &&
             mousePos.y <= this.position.y + this.height 
             ) {
-            console.log('teste')
-        }
+            console.log('hover')
+            
         }
         
     }
@@ -90,10 +89,14 @@ class menus {
                 mousePos.y >= this.position.y &&
                 mousePos.y <= this.position.y + this.height 
                 ) {
-                console.log('teste')
+                console.log('click')
                 this.func()
+                this.moveOut()
             }
         }
+    moveOut(){
+        this.position.x += canvas.width
+    }
     }
 
 
@@ -145,9 +148,9 @@ const hole = new sprite({
 const desenharSprites = () =>{
     ball.draw()
     hole.draw()
-    for (i=0;i<paredes.length;i++){
-        paredes[i].draw()
-    }
+    paredes.forEach(element => {
+        element.draw()
+    });
 }
 
 function logMouseMove(e)  {
@@ -192,7 +195,7 @@ function mouseUp(){
 
 
     
-    }
+}
     
        
 
@@ -213,9 +216,12 @@ canvas.onmousedown = () => {
 
 // colisão
 const colisao = () =>{
-    if (ball.position.y <= paredes[1].position.y + paredes[1].height) {
-        console.log("alegria")
-    }
+    paredes.forEach(Element => {
+        if (ball.position.y <= Element.position.y + Element.height
+            ) {
+            
+        }
+    });  
 }
 
 
@@ -270,9 +276,18 @@ function animate(){
     func: opcoes 
   })
 
+  const title = () =>{
+    let fontSize = 150
+    let maxwidth = canvas.width/100*50
+    c.fillStyle = "yellow"
+    c.font = `${fontSize}px Century`
+    c.textAlign = "center"
+    c.fillText("GolfJs",canvas.width/2,canvas.height/100*20,maxwidth)
 
+  }
 
 function menu(){
+    title()
   menuIniciar.draw()
   menuOpcoes.draw()
 
