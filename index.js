@@ -1,13 +1,9 @@
 const canvas = document.querySelector('canvas')
-
 const c = canvas.getContext('2d')
-canvas.style.display = 'grid'
-canvas.style.alignItems = 'center'
 
 let velocidade = 0
 let tacada = true
 let gameWon = false
-
 let mousePos = {
     x: 0,
     y: 0,
@@ -19,25 +15,19 @@ canvas.height = 512
 c.fillStyle = 'green'
 c.fillRect(0,0,canvas.width,canvas.height)
 
-
-
-
 class sprite {
     constructor({position,color,radius}) {
         this.position = position
         this.color = color
-        this.radius = radius
-       
-       
+        this.radius = radius 
     }
+
     draw(){
         c.fillStyle = this.color
         c.beginPath()
         c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, true); // Círculo exterior
         c.fill()
     }
-
-    
 }
 
 class walls {
@@ -50,10 +40,63 @@ class walls {
     draw(){
         c.fillStyle = this.color
         c.fillRect(this.position.x, this.position.y,this.width,this.height)
-       
     }
-    
 }
+
+class menus {
+    constructor({position,corFundo,corBorda,texto,func,width,height}){
+        this.position = position
+        this.corFundo = corFundo
+        this.corBorda = corBorda
+        this.texto = texto
+        this.func = func
+        this.width = width
+        this.height = height
+    }
+    draw(){
+        c.lineWidth = 5
+        c.font = "30px Arial"
+
+        c.fillStyle = this.corFundo
+        c.strokeStyle = this.corBorda
+        c.fillRect(this.position.x,this.position.y,this.width,this.height)
+        c.strokeRect(this.position.x,this.position.y,this.width,this.height)
+
+
+        c.fillStyle = "black"
+        c.textAlign = "center"
+        c.fillText(this.texto,this.position.x + this.width/2,this.position.y + this.height/100*60)
+        
+        
+    }
+    hover(){
+        canvas.onmousemove = () => {
+             if (
+            mousePos.x >= this.position.x &&
+            mousePos.x <= this.position.x + this.width &&
+            mousePos.y >= this.position.y &&
+            mousePos.y <= this.position.y + this.height 
+            ) {
+            console.log('teste')
+        }
+        }
+        
+    }
+    click(){
+        
+            if (
+                mousePos.x >= this.position.x &&
+                mousePos.x <= this.position.x + this.width &&
+                mousePos.y >= this.position.y &&
+                mousePos.y <= this.position.y + this.height 
+                ) {
+                console.log('teste')
+                this.func()
+            }
+        }
+    }
+
+
 
  const wall1 = new walls({
         position:{
@@ -83,7 +126,7 @@ const paredes = [
 const ball = new sprite({
     position:{
         x: canvas.width/2,
-        y: canvas.height-50
+         y: 350, //canvas.height-50
     },
     color:'white',
     radius: 10,
@@ -118,6 +161,7 @@ const mouseDown = () => {
 canvas.addEventListener('mouseup',()=>{
     if (tacada){
         mouseUp()
+        console.log(ball.radius)
     }
 })
 }
@@ -188,10 +232,10 @@ const win = () => {
 }
 
 function animate(){
+    if (!gameWon){
     requestAnimationFrame(animate)
     c.fillStyle = 'green'
     c.fillRect(0,0,canvas.width,canvas.height)
-    if (!gameWon){
         desenharSprites()
        win()
       colisao()
@@ -201,63 +245,50 @@ function animate(){
 
 
 // menu
-
-
-function menu(){
-    var menuIniciar = {
+    const menuIniciar = new menus ({
         corFundo:'rgb(156, 42, 13)',
         corBorda:'rgb(109, 22, 0)',
         width: 175,
         height: 75,
-        x: canvas.width/2 - 175/2,
-        y: canvas.height/2-100,
-        texto: "Jogar"
-    }
-  var menuOpçoes = {
+        position:{
+            x: canvas.width/2 - 175/2,
+            y: canvas.height/2-100,
+        },
+        texto: "Jogar",
+        func: animate
+    })
+  const menuOpcoes = new menus({
     corFundo:'rgb(156, 42, 13)',
     corBorda:'rgb(109, 22, 0)',
     width: 175,
     height: 75,
-    x: canvas.width/2 - 175/2,
-    y: canvas.height/2 + 50,
-    texto: "Opções"
-  }
-    c.lineWidth = 5
-    c.font = "30px Arial"
-  // iniciar
-  
-  c.fillStyle = menuIniciar.corFundo
-  c.strokeStyle = menuIniciar.corBorda
-  c.fillRect(menuIniciar.x,menuIniciar.y,menuIniciar.width,menuIniciar.height)
-  c.strokeRect(menuIniciar.x,menuIniciar.y,menuIniciar.width,menuIniciar.height)
+    position:{
+        x: canvas.width/2 - 175/2,
+        y: canvas.height/2 + 50,
+    },
+    texto: "Opções",
+    func: opcoes 
+  })
 
-  c.fillStyle = "black"
-  c.textAlign = "center"
-  c.fillText(`${menuIniciar.texto}`,menuIniciar.x + menuIniciar.width/2,menuIniciar.y + menuIniciar.height/100*60)
 
-  // opcões
-  c.fillStyle = menuOpçoes.corFundo
-  c.strokeStyle = menuOpçoes.corBorda
-  c.fillRect(menuOpçoes.x,menuOpçoes.y,menuOpçoes.width,menuOpçoes.height)
-  c.strokeRect(menuOpçoes.x,menuOpçoes.y,menuOpçoes.width,menuOpçoes.height)
 
-  c.fillStyle = "black"
-  c.textAlign = "center"
-  c.fillText(`${menuOpçoes.texto}`,menuOpçoes.x + menuOpçoes.width/2,menuOpçoes.y + menuOpçoes.height/100*60)
+function menu(){
+  menuIniciar.draw()
+  menuOpcoes.draw()
 
-   canvas.onmousemove = () => {
-    console.log(mousePos)
-    console.log(menuIniciar.x,menuIniciar.y)
-    if (
-        mousePos.x >= menuIniciar.x &&
-        mousePos.x <= menuIniciar.x + menuIniciar.width &&
-        mousePos.y >= menuIniciar.y &&
-        mousePos.y <= menuIniciar.y + menuIniciar.height
-        
-        ){
-            animate()
+  canvas.onmousemove = () => {
+        menuIniciar.hover()    
+        menuOpcoes.hover()
     }
-   } 
+    canvas.onclick = () => {
+        menuIniciar.click()
+        menuOpcoes.click()
+    }
+   
+   
+} 
+function opcoes(){
+    console.log('teste')
 }
 window.onload = menu()
 
