@@ -12,8 +12,11 @@ let mousePos = {
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
 
-c.fillStyle = 'green'
-c.fillRect(0,0,canvas.width,canvas.height)
+const telaVerde = () =>{
+    c.fillStyle = 'green'
+    c.fillRect(0,0,canvas.width,canvas.height)
+}
+
 
 class sprite {
     constructor({position,color,radius}) {
@@ -82,7 +85,6 @@ class menus {
         
     }
     click(){
-        
             if (
                 mousePos.x >= this.position.x &&
                 mousePos.x <= this.position.x + this.width &&
@@ -91,14 +93,92 @@ class menus {
                 ) {
                 console.log('click')
                 this.func()
-                this.moveOut()
+                moveElements(menuIniciarOpcoes,"out")
             }
         }
-    moveOut(){
-        this.position.x += canvas.width
+    
     }
+    // menu
+    const title = () =>{
+    let fontSize = 150
+    let maxwidth = canvas.width/100*50
+    c.fillStyle = "yellow"
+    c.font = `${fontSize}px Century`
+    c.textAlign = "center"
+    c.fillText("GolfJs",canvas.width/2,canvas.height/100*20,maxwidth)
+    
     }
+const menuIniciar = new menus ({
+    corFundo:'rgb(156, 42, 13)',
+    corBorda:'rgb(109, 22, 0)',
+    width: 175,
+    height: 75,
+    position:{
+        x: canvas.width/2 - 175/2,
+        y: canvas.height/2-100,
+    },
+    texto: "Jogar",
+    func: animate
+})
+const menuOpcoes = new menus({
+corFundo:'rgb(156, 42, 13)',
+corBorda:'rgb(109, 22, 0)',
+width: 175,
+height: 75,
+position:{
+    x: canvas.width/2 - 175/2,
+    y: canvas.height/2 + 50,
+},
+texto: "Opções",
+func: opcoes 
+})
 
+const menuIniciarOpcoes = [
+menuIniciar,menuOpcoes
+]
+
+
+function menu(){
+telaVerde()
+title()
+menuIniciar.draw()
+menuOpcoes.draw()
+
+canvas.onmousemove = () => {
+    menuIniciar.hover()    
+    menuOpcoes.hover()
+}
+canvas.onclick = () => {
+    menuIniciar.click()
+    menuOpcoes.click()
+}
+
+
+} 
+
+const Opcoes = [
+    'placeholder'
+]
+function opcoes(){
+telaVerde()
+}
+
+function moveElements(elements,direcao){
+    if (direcao = "out") {
+        elements.forEach(element => {
+            if (element.position.x < canvas.width) { 
+                element.position.x += canvas.width
+            }
+        })
+    }
+    if (direcao = "in") {
+        elements.forEach(element => {
+            if (element.position.x > canvas.width) { 
+                element.position.x -= canvas.width
+            }
+        })
+    }
+}
 
 
  const wall1 = new walls({
@@ -129,7 +209,7 @@ const paredes = [
 const ball = new sprite({
     position:{
         x: canvas.width/2,
-         y: 350, //canvas.height-50
+         y: canvas.height-50, 
     },
     color:'white',
     radius: 10,
@@ -145,6 +225,10 @@ const hole = new sprite({
     radius: 20,
 })
 
+const sprites = [
+    ball,hole
+]
+
 const desenharSprites = () =>{
     ball.draw()
     hole.draw()
@@ -158,7 +242,7 @@ function logMouseMove(e)  {
 	 mousePos = { x: e.clientX, y: e.clientY }
 }
 
-window.onmousemove = logMouseMove
+
 
 const mouseDown = () => {
 canvas.addEventListener('mouseup',()=>{
@@ -228,82 +312,26 @@ const colisao = () =>{
 //win
 const win = () => {
      if(
-        ball.position.y <= hole.position.y + hole.radius &&
+        ball.position.y - hole.position.y + hole.radius <= 20 &&
         ball.position.x <= hole.position.x &&
         ball.position.y >= hole.position.y - hole.radius
         ){
         console.log(`bola no buraco`)
-        gameWon = true    
+        gameWon = true 
+        moveElements(sprites,paredes,"out")   
     }
 }
 
 function animate(){
+    telaVerde()
     if (!gameWon){
-    requestAnimationFrame(animate)
-    c.fillStyle = 'green'
-    c.fillRect(0,0,canvas.width,canvas.height)
+        requestAnimationFrame(animate)
         desenharSprites()
-       win()
-      colisao()
+        win()
+        colisao()
     }
 }
 
 
-
-// menu
-    const menuIniciar = new menus ({
-        corFundo:'rgb(156, 42, 13)',
-        corBorda:'rgb(109, 22, 0)',
-        width: 175,
-        height: 75,
-        position:{
-            x: canvas.width/2 - 175/2,
-            y: canvas.height/2-100,
-        },
-        texto: "Jogar",
-        func: animate
-    })
-  const menuOpcoes = new menus({
-    corFundo:'rgb(156, 42, 13)',
-    corBorda:'rgb(109, 22, 0)',
-    width: 175,
-    height: 75,
-    position:{
-        x: canvas.width/2 - 175/2,
-        y: canvas.height/2 + 50,
-    },
-    texto: "Opções",
-    func: opcoes 
-  })
-
-  const title = () =>{
-    let fontSize = 150
-    let maxwidth = canvas.width/100*50
-    c.fillStyle = "yellow"
-    c.font = `${fontSize}px Century`
-    c.textAlign = "center"
-    c.fillText("GolfJs",canvas.width/2,canvas.height/100*20,maxwidth)
-
-  }
-
-function menu(){
-    title()
-  menuIniciar.draw()
-  menuOpcoes.draw()
-
-  canvas.onmousemove = () => {
-        menuIniciar.hover()    
-        menuOpcoes.hover()
-    }
-    canvas.onclick = () => {
-        menuIniciar.click()
-        menuOpcoes.click()
-    }
-   
-   
-} 
-function opcoes(){
-    console.log('teste')
-}
 window.onload = menu()
-
+window.onmousemove = logMouseMove
