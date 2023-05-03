@@ -91,9 +91,9 @@ class menus {
                 mousePos.y >= this.position.y &&
                 mousePos.y <= this.position.y + this.height 
                 ) {
-                console.log('click')
+                
                 this.func()
-                moveElements(menuIniciarOpcoes,"out")
+                moveElements("out",menuIniciarOpcoes)
             }
         }
     
@@ -138,7 +138,7 @@ menuIniciar,menuOpcoes
 ]
 
 
-function menu(){
+const menu = () => {
 telaVerde()
 title()
 menuIniciar.draw()
@@ -163,15 +163,15 @@ function opcoes(){
 telaVerde()
 }
 
-function moveElements(elements,direcao){
-    if (direcao = "out") {
+const moveElements = (direcao,elements) => {
+    if (direcao == "out") {
         elements.forEach(element => {
             if (element.position.x < canvas.width) { 
                 element.position.x += canvas.width
             }
         })
     }
-    if (direcao = "in") {
+    if (direcao == "in") {
         elements.forEach(element => {
             if (element.position.x > canvas.width) { 
                 element.position.x -= canvas.width
@@ -209,7 +209,7 @@ const paredes = [
 const ball = new sprite({
     position:{
         x: canvas.width/2,
-         y: canvas.height-50, 
+         y: canvas.height/100*80, 
     },
     color:'white',
     radius: 10,
@@ -245,30 +245,40 @@ function logMouseMove(e)  {
 
 
 const mouseDown = () => {
+    
+    let cordInicial = {
+        x: mousePos.x,
+        y: mousePos.y,
+    }
+    console.log(cordInicial)
 canvas.addEventListener('mouseup',()=>{
     if (tacada){
-        mouseUp()
-        console.log(ball.radius)
+        mouseUp(cordInicial)
     }
 })
 }
 
-function mouseUp(){
-    
+function mouseUp(cordInicial){
+    tacada = false
+    let cordsFinais = {
+        x: mousePos.x - cordInicial.x,
+        Y: mousePos.y - cordInicial.y,
+    }
+    let angulo = Math.atan2(cordsFinais.Y,cordsFinais.x)
+    console.log(angulo)
 
-   tacada = false
     //Acelera
     let acelerar = setInterval(function(){
       velocidade+=5
       ball.position.y -= velocidade
-    //   console.log(ball.position)
+    
       if(velocidade >= 20) {
         clearInterval(acelerar)
 
        let frear = setInterval(function(){
         velocidade-=2
         ball.position.y -= velocidade
-        // console.log(ball.position)
+        
         if (velocidade <= 0){
             clearInterval(frear)
             tacada = true
