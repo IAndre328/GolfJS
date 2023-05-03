@@ -1,16 +1,18 @@
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
+canvas.width = window.innerWidth
+canvas.height = window.innerHeight
 
-let velocidade = 0
+
+const velocidade = 5
+let angulo = 0
+let i = 0
 let tacada = true
 let gameWon = false
 let mousePos = {
     x: 0,
     y: 0,
 }
-
-canvas.width = window.innerWidth
-canvas.height = window.innerHeight
 
 const telaVerde = () =>{
     c.fillStyle = 'green'
@@ -163,7 +165,7 @@ function opcoes(){
 telaVerde()
 }
 
-const moveElements = (direcao,elements) => {
+const moveElements = (direcao,{elements}) => {
     if (direcao == "out") {
         elements.forEach(element => {
             if (element.position.x < canvas.width) { 
@@ -246,49 +248,53 @@ function logMouseMove(e)  {
 
 const mouseDown = () => {
     
-    let cordInicial = {
-        x: mousePos.x,
-        y: mousePos.y,
-    }
-    console.log(cordInicial)
 canvas.addEventListener('mouseup',()=>{
     if (tacada){
-        mouseUp(cordInicial)
+        mouseUp()
     }
 })
 }
 
-function mouseUp(cordInicial){
+function mouseUp(){
     tacada = false
-    let cordsFinais = {
-        x: mousePos.x - cordInicial.x,
-        Y: mousePos.y - cordInicial.y,
-    }
-    let angulo = Math.atan2(cordsFinais.Y,cordsFinais.x)
-    console.log(angulo)
+     angulo = Math.atan2(mousePos.y - ball.position.y,mousePos.x -ball.position.x)
+    
+    
+    
+    let acelerar = setInterval(()=>{
+        console.log(ball.radius)
+         i+= 0.5
+        ball.position.x -= Math.cos(angulo) 
+        ball.position.y -= Math.sin(angulo) 
+         console.log(i)
+        if (i>= 20){
+            clearInterval(acelerar)
+            
+        }
+    },15)
 
     //Acelera
-    let acelerar = setInterval(function(){
-      velocidade+=5
-      ball.position.y -= velocidade
+//     let acelerar = setInterval(function(){
+//       velocidade+=5
+//       ball.position.y -= velocidade
     
-      if(velocidade >= 20) {
-        clearInterval(acelerar)
+//       if(velocidade >= 20) {
+//         clearInterval(acelerar)
 
-       let frear = setInterval(function(){
-        velocidade-=2
-        ball.position.y -= velocidade
+//        let frear = setInterval(function(){
+//         velocidade-=2
+//         ball.position.y -= velocidade
         
-        if (velocidade <= 0){
-            clearInterval(frear)
-            tacada = true
-        }
-       },30)  
-      }
-  }, 30)
+//         if (velocidade <= 0){
+//             clearInterval(frear)
+//             tacada = true
+//         }
+//        },30)  
+//       }
+//   }, 30)
 
-
-    
+    tacada = true
+    i = 0
 }
     
        
@@ -322,13 +328,14 @@ const colisao = () =>{
 //win
 const win = () => {
      if(
-        ball.position.y - hole.position.y + hole.radius <= 20 &&
-        ball.position.x <= hole.position.x &&
-        ball.position.y >= hole.position.y - hole.radius
+        hole.position.x >= ball.position.x - ball.radius
+        && hole.position.x <= ball.position.x + ball.radius*1.5
+        && hole.position.y >= ball.position.y - ball.radius
+        && hole.position.y <= ball.position.y + ball.radius*1.5
         ){
         console.log(`bola no buraco`)
         gameWon = true 
-        moveElements(sprites,paredes,"out")   
+        moveElements("out",{sprites,paredes})   
     }
 }
 
