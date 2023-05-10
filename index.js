@@ -4,7 +4,10 @@ canvas.width = window.innerWidth
 canvas.height = window.innerHeight
 
 
-const velocidade = 5
+let velocidade = {
+    x: 3,
+    y: 3
+}
 let angulo = 0
 let i = 0
 let tacada = true
@@ -76,10 +79,11 @@ class menus {
     }
     hover(){
         if (
-            mousePos.x >= this.position.x &&
-            mousePos.x <= this.position.x + this.width &&
-            mousePos.y >= this.position.y &&
-            mousePos.y <= this.position.y + this.height 
+           mousePos.x >= this.position.x &&
+                mousePos.x <= this.position.x + this.width &&
+                mousePos.y >= this.position.y &&
+                mousePos.y <= this.position.y + this.height 
+
             ) {
             console.log('hover')
             
@@ -165,7 +169,7 @@ function opcoes(){
 telaVerde()
 }
 
-const moveElements = (direcao,{elements}) => {
+const moveElements = (direcao,elements) => {
     if (direcao == "out") {
         elements.forEach(element => {
             if (element.position.x < canvas.width) { 
@@ -196,8 +200,8 @@ const moveElements = (direcao,{elements}) => {
 
 const wall2 = new walls({
     position: {
-        x: 500,
-        y: 250,
+        x: canvas.width/2,
+        y: canvas.height/4,
     },
     color:'red',
     width:100,
@@ -247,11 +251,9 @@ function logMouseMove(e)  {
 
 
 const mouseDown = () => {
-    
+   console.log("hey") 
 canvas.addEventListener('mouseup',()=>{
-    if (tacada){
-        mouseUp()
-    }
+    tacada ? mouseUp() : console.log("ainda nao")
 })
 }
 
@@ -259,39 +261,24 @@ function mouseUp(){
     tacada = false
      angulo = Math.atan2(mousePos.y - ball.position.y,mousePos.x -ball.position.x)
     
-    
-    
     let acelerar = setInterval(()=>{
-        console.log(ball.radius)
-         i+= 0.5
-        ball.position.x -= Math.cos(angulo) 
-        ball.position.y -= Math.sin(angulo) 
+        // console.log(ball.radius)
+         i+= 2
+        ball.position.x -= Math.cos(angulo) * velocidade.x
+        ball.position.y -= Math.sin(angulo) * velocidade.y
          console.log(i)
         if (i>= 20){
             clearInterval(acelerar)
-            
+           let frear = setInterval(() => {
+            ball.position.x -= Math.cos(angulo) * velocidade.x/2
+            ball.position.y -= Math.sin(angulo) * velocidade.y/2
+            i--
+            if (i <= 0){
+                clearInterval(frear)
+            }
+           },15) 
         }
     },15)
-
-    //Acelera
-//     let acelerar = setInterval(function(){
-//       velocidade+=5
-//       ball.position.y -= velocidade
-    
-//       if(velocidade >= 20) {
-//         clearInterval(acelerar)
-
-//        let frear = setInterval(function(){
-//         velocidade-=2
-//         ball.position.y -= velocidade
-        
-//         if (velocidade <= 0){
-//             clearInterval(frear)
-//             tacada = true
-//         }
-//        },30)  
-//       }
-//   }, 30)
 
     tacada = true
     i = 0
@@ -317,9 +304,22 @@ canvas.onmousedown = () => {
 // colisão
 const colisao = () =>{
     paredes.forEach(Element => {
-        if (ball.position.y <= Element.position.y + Element.height
-            ) {
-            
+        if (ball.position.x - ball.radius < Element.position.x){
+            // ver se ta tocando o lado esquerdo 
+            velocidade.x = Math.abs(velocidade.x)
+        }
+
+        if (ball.position.x + ball.radius > Element.position.x + Element.width) {
+            // ver se ta tocando o lado direito
+            velocidade.x = -Math.abs(velocidade.x)     
+        }
+        if (ball.position.y - ball.radius < Element.position.y){
+            // ver se ta tocando o lado de cima
+            velocidade.y = Math.abs(velocidade.y)
+        }
+        if (ball.position.y + ball.radius > Element.position.y + Element.height) {
+            // ver se ta tocando o lado de baixo
+            velocidade.y = -Math.abs(velocidade.y)   
         }
     });  
 }
