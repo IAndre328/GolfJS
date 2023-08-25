@@ -1,0 +1,60 @@
+canvas {
+    position: relative;
+    top: 0;
+    left: 0;
+  }
+  
+  div {
+    position: absolute;
+  }
+  
+  #canvas-container {
+    position: relative;
+  }
+  
+  .caixas {
+    position: absolute;
+    width: 100px;
+    background-color: rgba(228, 70, 8, 0.8);
+    padding: 30px;
+    border-radius: 5px;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: solid brown 5px;
+    font-size: 30px;
+  }
+  
+  #canvas-container:hover {
+    background: rgb(255, 110, 43);
+  }
+  
+  #voltar {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: 0%;
+    left: 0%;
+    cursor: pointer;
+  }
+  
+  #voltar img {
+    width: 50px;
+    height: auto;
+  }
+  
+  #jogar {
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+  }
+  
+  #opcoes {
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+  }
+  

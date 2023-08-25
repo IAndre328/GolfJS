@@ -1,354 +1,202 @@
-const canvas = document.querySelector('canvas')
-const c = canvas.getContext('2d')
-canvas.width = window.innerWidth
-canvas.height = window.innerHeight
+// Variáveis globais
+const canvas = document.querySelector('canvas');
+const c = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+let mousePos = { x: 0, y: 0 };
 
+// Configurações iniciais
+let velocidade = { x: 3, y: 3 };
+let angulo = 0;
+let i = 0;
+let tacada = true;
+let gameWon = false;
 
-let velocidade = {
-    x: 3,
-    y: 3
-}
-let angulo = 0
-let i = 0
-let tacada = true
-let gameWon = false
-let mousePos = {
-    x: 0,
-    y: 0,
-}
+// Função para preencher o canvas com verde
+const telaVerde = () => {
+    c.fillStyle = 'green';
+    c.fillRect(0, 0, canvas.width, canvas.height);
+};
 
-const telaVerde = () =>{
-    c.fillStyle = 'green'
-    c.fillRect(0,0,canvas.width,canvas.height)
-}
-
-
-class sprite {
-    constructor({position,color,radius}) {
-        this.position = position
-        this.color = color
-        this.radius = radius 
+// Classe para desenhar elementos circulares
+class Sprite {
+    constructor({ position, color, radius }) {
+        this.position = position;
+        this.color = color;
+        this.radius = radius;
     }
 
-    draw(){
-        c.fillStyle = this.color
-        c.beginPath()
-        c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, true); // Círculo exterior
-        c.fill()
+    draw() {
+        c.fillStyle = this.color;
+        c.beginPath();
+        c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
+        c.fill();
     }
 }
 
-class walls {
-    constructor({position,color,width,height}){
-        this.position = position
-        this.color = color
-        this.height = height
-        this.width = width
+// Classe para desenhar paredes retangulares
+class Wall {
+    constructor({ position, color, width, height }) {
+        this.position = position;
+        this.color = color;
+        this.width = width;
+        this.height = height;
     }
-    draw(){
-        c.fillStyle = this.color
-        c.fillRect(this.position.x, this.position.y,this.width,this.height)
-    }
-}
 
-class menus {
-    constructor({position,corFundo,corBorda,texto,func,width,height}){
-        this.position = position
-        this.corFundo = corFundo
-        this.corBorda = corBorda
-        this.texto = texto
-        this.func = func
-        this.width = width
-        this.height = height
-    }
-    draw(){
-        c.lineWidth = 5
-        c.font = "30px Arial"
-
-        c.fillStyle = this.corFundo
-        c.strokeStyle = this.corBorda
-        c.fillRect(this.position.x,this.position.y,this.width,this.height)
-        c.strokeRect(this.position.x,this.position.y,this.width,this.height)
-
-
-        c.fillStyle = "black"
-        c.textAlign = "center"
-        c.fillText(this.texto,this.position.x + this.width/2,this.position.y + this.height/100*60)
-        
-        
-    }
-    hover(){
-        if (
-           mousePos.x >= this.position.x &&
-                mousePos.x <= this.position.x + this.width &&
-                mousePos.y >= this.position.y &&
-                mousePos.y <= this.position.y + this.height 
-
-            ) {
-            console.log('hover')
-            
-        }
-        
-    }
-    click(){
-            if (
-                mousePos.x >= this.position.x &&
-                mousePos.x <= this.position.x + this.width &&
-                mousePos.y >= this.position.y &&
-                mousePos.y <= this.position.y + this.height 
-                ) {
-                
-                this.func()
-                moveElements("out",menuIniciarOpcoes)
-            }
-        }
-    
-    }
-    // menu
-    const title = () =>{
-    let fontSize = 150
-    let maxwidth = canvas.width/100*50
-    c.fillStyle = "yellow"
-    c.font = `${fontSize}px Century`
-    c.textAlign = "center"
-    c.fillText("GolfJs",canvas.width/2,canvas.height/100*20,maxwidth)
-    
-    }
-const menuIniciar = new menus ({
-    corFundo:'rgb(156, 42, 13)',
-    corBorda:'rgb(109, 22, 0)',
-    width: 175,
-    height: 75,
-    position:{
-        x: canvas.width/2 - 175/2,
-        y: canvas.height/2-100,
-    },
-    texto: "Jogar",
-    func: animate
-})
-const menuOpcoes = new menus({
-corFundo:'rgb(156, 42, 13)',
-corBorda:'rgb(109, 22, 0)',
-width: 175,
-height: 75,
-position:{
-    x: canvas.width/2 - 175/2,
-    y: canvas.height/2 + 50,
-},
-texto: "Opções",
-func: opcoes 
-})
-
-const menuIniciarOpcoes = [
-menuIniciar,menuOpcoes
-]
-
-
-const menu = () => {
-telaVerde()
-title()
-menuIniciar.draw()
-menuOpcoes.draw()
-
-canvas.onmousemove = () => {
-    menuIniciar.hover()    
-    menuOpcoes.hover()
-}
-canvas.onclick = () => {
-    menuIniciar.click()
-    menuOpcoes.click()
-}
-
-
-} 
-
-const Opcoes = [
-    'placeholder'
-]
-function opcoes(){
-telaVerde()
-}
-
-const moveElements = (direcao,elements) => {
-    if (direcao == "out") {
-        elements.forEach(element => {
-            if (element.position.x < canvas.width) { 
-                element.position.x += canvas.width
-            }
-        })
-    }
-    if (direcao == "in") {
-        elements.forEach(element => {
-            if (element.position.x > canvas.width) { 
-                element.position.x -= canvas.width
-            }
-        })
+    draw() {
+        c.fillStyle = this.color;
+        c.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
 }
 
+// Elementos do menu
+const voltar = document.createElement("div");
+const jogar = document.createElement("div");
+const opcoes = document.createElement("div");
 
- const wall1 = new walls({
-        position:{
-            x: 100,
-            y:100,
-        },
-        color:'red',
-        width: 100,
-        height: 50
-    }
-)
+// Função para exibir o título
+const title = () => {
+    let fontSize = 150;
+    let maxwidth = canvas.width / 100 * 50;
+    c.fillStyle = "yellow";
+    c.font = `${fontSize}px Century`;
+    c.textAlign = "center";
+    c.fillText("GolfJs", canvas.width / 2, canvas.height / 100 * 20, maxwidth);
+};
 
-const wall2 = new walls({
-    position: {
-        x: canvas.width/2,
-        y: canvas.height/4,
-    },
-    color:'red',
-    width:100,
-    height:50
-})
+// Função para declarar o menu
+function declararMenu() {
+    telaVerde();
+    title();
 
-const paredes = [
-    wall1,wall2,
-]
+    voltar.classList.add("caixas");
+    jogar.classList.add("caixas");
+    opcoes.classList.add("caixas");
 
-const ball = new sprite({
-    position:{
-        x: canvas.width/2,
-         y: canvas.height/100*80, 
-    },
-    color:'white',
-    radius: 10,
-})
+    voltar.id = "voltar";
+    jogar.id = "jogar";
+    opcoes.id = "opcoes";
 
+    voltar.innerHTML = `<img src="./img/download.png" alt="Voltar">`;
+    voltar.addEventListener("click", menu);
 
-const hole = new sprite({
-    position:{
-        x: canvas.width/2,
-        y: 50
-    },
-    color:'black',
-    radius: 20,
-})
+    jogar.onclick = animate;
+    jogar.textContent = "Jogar";
 
-const sprites = [
-    ball,hole
-]
+    opcoes.onclick = menuOpcoes;
+    opcoes.textContent = "Opções";
 
-const desenharSprites = () =>{
-    ball.draw()
-    hole.draw()
+    menu();
+}
+
+// Função para exibir o menu
+function menu() {
+    cancelAnimationFrame(animate) || null;
+
+    telaVerde();
+    title();
+    let canvasContainer = document.querySelector("#canvas-container");
+    canvasContainer.append(voltar);
+    canvasContainer.appendChild(opcoes);
+    canvasContainer.appendChild(jogar);
+}
+
+// Função para exibir as opções do menu
+function menuOpcoes() {
+    removerElemento(jogar);
+    removerElemento(opcoes);
+}
+
+// Função para remover um elemento do DOM
+function removerElemento(elemento) {
+    elemento.remove();
+}
+
+// Elementos do jogo
+const wall1 = new Wall({
+    position: { x: 100, y: 100 },
+    color: 'red',
+    width: 100,
+    height: 50
+});
+
+const wall2 = new Wall({
+    position: { x: canvas.width / 2, y: canvas.height / 4 },
+    color: 'red',
+    width: 100,
+    height: 50
+});
+
+const paredes = [wall1, wall2];
+
+const ball = new Sprite({
+    position: { x: canvas.width / 2, y: canvas.height / 100 * 80 },
+    color: 'white',
+    radius: 15
+});
+
+const hole = new Sprite({
+    position: { x: canvas.width / 2, y: 50 },
+    color: 'black',
+    radius: 30
+});
+
+const sprites = [ball, hole];
+
+// Função para desenhar os elementos na tela
+function desenharSprites() {
+    sprites.forEach(element => {
+        element.draw();
+    });
+
     paredes.forEach(element => {
-        element.draw()
+        element.draw();
     });
 }
 
-function logMouseMove(e)  {
-	e = e || window.event
-	 mousePos = { x: e.clientX, y: e.clientY }
+// Função para capturar o movimento do mouse
+function logMouseMove(e) {
+    e = e || window.event;
+    let rect = canvas.getBoundingClientRect();
+    mousePos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
 }
 
-
-
-const mouseDown = () => {
-   console.log("hey") 
-canvas.addEventListener('mouseup',()=>{
-    tacada ? mouseUp() : console.log("ainda nao")
-})
-}
-
-function mouseUp(){
-    tacada = false
-     angulo = Math.atan2(mousePos.y - ball.position.y,mousePos.x -ball.position.x)
+function verificarSeEncostou(elemento1,elemento2,tamanhoElemento2){
+    return (
+    elemento1.x >= elemento2.position.x - elemento2[tamanhoElemento2] &&
+    elemento1.x <= elemento2.position.x + elemento2[tamanhoElemento2] &&
+    elemento1.y >= elemento2.position.y - elemento2[tamanhoElemento2] &&
+    elemento1.y <= elemento2.position.y + elemento2[tamanhoElemento2] 
+    )
     
-    let acelerar = setInterval(()=>{
-        // console.log(ball.radius)
-         i+= 2
-        ball.position.x -= Math.cos(angulo) * velocidade.x
-        ball.position.y -= Math.sin(angulo) * velocidade.y
-         console.log(i)
-        if (i>= 20){
-            clearInterval(acelerar)
-           let frear = setInterval(() => {
-            ball.position.x -= Math.cos(angulo) * velocidade.x/2
-            ball.position.y -= Math.sin(angulo) * velocidade.y/2
-            i--
-            if (i <= 0){
-                clearInterval(frear)
-            }
-           },15) 
-        }
-    },15)
-
-    tacada = true
-    i = 0
 }
-    
+
+
+// Função de animação principal
+function animate() {
+    telaVerde();
+    removerElemento(jogar);
+    removerElemento(opcoes);
+    if (!gameWon) {
+        requestAnimationFrame(animate);
+        desenharSprites();
        
-
-canvas.onmousedown = () => {
-    if (
-        mousePos.x >= ball.position.x - ball.radius
-        && mousePos.x <= ball.position.x + ball.radius*1.5
-        && mousePos.y >= ball.position.y - ball.radius
-        && mousePos.y <= ball.position.y + ball.radius*1.5
-        ){
-        mouseDown()
     }
+}
+
+function mousedown(){
+    let posInicial = mousePos;
+}
+
+
+
+
+// Eventos de clique e movimento do mouse
+canvas.addEventListener("click",()=>{
     
-}
+   if(verificarSeEncostou(mousePos,ball,'radius'))mousedown()
+})
+window.onmousemove = logMouseMove;
 
-
-
-
-// colisão
-const colisao = () =>{
-    paredes.forEach(Element => {
-        if (ball.position.x - ball.radius < Element.position.x){
-            // ver se ta tocando o lado esquerdo 
-            velocidade.x = Math.abs(velocidade.x)
-        }
-
-        if (ball.position.x + ball.radius > Element.position.x + Element.width) {
-            // ver se ta tocando o lado direito
-            velocidade.x = -Math.abs(velocidade.x)     
-        }
-        if (ball.position.y - ball.radius < Element.position.y){
-            // ver se ta tocando o lado de cima
-            velocidade.y = Math.abs(velocidade.y)
-        }
-        if (ball.position.y + ball.radius > Element.position.y + Element.height) {
-            // ver se ta tocando o lado de baixo
-            velocidade.y = -Math.abs(velocidade.y)   
-        }
-    });  
-}
-
-
-//win
-const win = () => {
-     if(
-        hole.position.x >= ball.position.x - ball.radius
-        && hole.position.x <= ball.position.x + ball.radius*1.5
-        && hole.position.y >= ball.position.y - ball.radius
-        && hole.position.y <= ball.position.y + ball.radius*1.5
-        ){
-        console.log(`bola no buraco`)
-        gameWon = true 
-        moveElements("out",{sprites,paredes})   
-    }
-}
-
-function animate(){
-    telaVerde()
-    if (!gameWon){
-        requestAnimationFrame(animate)
-        desenharSprites()
-        win()
-        colisao()
-    }
-}
-
-
-window.onload = menu()
-window.onmousemove = logMouseMove
+// Inicialização após o carregamento da página
+window.onload = declararMenu;
