@@ -11,6 +11,7 @@ let angulo = 0;
 let i = 0;
 let tacada = true;
 let gameWon = false;
+let retornar = false;
 
 // Função para preencher o canvas com verde
 const telaVerde = () => {
@@ -186,13 +187,20 @@ function animate() {
 
 function mousedown(){
     let posInicial = mousePos;
+    console.log(posInicial)
+    addEventListener("mouseup",()=>{
+        mouseup(posInicial)
+    })
+}
+
+function mouseup(posInicial){
+    let posFinal = mousePos
+    console.log(posFinal)
 }
 
 
-
-
 // Eventos de clique e movimento do mouse
-canvas.addEventListener("click",()=>{
+canvas.addEventListener("mousedown",()=>{
     
    if(verificarSeEncostou(mousePos,ball,'radius'))mousedown()
 })
